@@ -1,48 +1,68 @@
 <script lang="ts">
-	import { page } from "$app/stores";
-	const title = "Nova ✨";
-	export let data;
-	function order_by_id(
-		tickets: Array<{
-			id: number;
-			created_at: string;
-			report: string;
-			tags: string;
-		}>,
-	) {
-		return tickets.sort((a, b) => a.id - b.id);
-	}
+  import { page } from "$app/stores";
+  import { current_tag_filter } from "$lib/store";
+  import { Tags } from "$lib/tagmanager";
+  import type { ticket_data } from "../lib/supabaseapi";
+  import TagViewer from "./TagViewer.svelte";
+  const title = "Nova ✨";
+  export let data;
+  let view_tickets: Array<ticket_data> = [];
+  function order_by_id(tickets: Array<ticket_data>) {
+    return tickets.sort((a, b) => a.id - b.id);
+  }
+  function update(tickets: Array<ticket_data>, tag_filter: Tags | null) {
+    view_tickets = [...order_by_id(tickets)];
+    console.log("view_tickets", view_tickets);
+    if (tag_filter !== null) {
+      console.log("current_tag_filter", tag_filter);
+      const t: Tags = tag_filter;
+      view_tickets = [
+        ...view_tickets.filter((d: ticket_data) =>
+          d.formattted_tags.includes(t),
+        ),
+      ];
+    }
+  }
+  $: update($page.data.tickets, $current_tag_filter);
 </script>
 
 <svelte:head>
-	<title>{title}</title>
+  <title>{title}</title>
 </svelte:head>
 <div class="container mx-auto">
-	<h1 class="h1 my-8">{title}</h1>
-	<div class="table-container">
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Created</th>
-					<th>Report</th>
-					<th>Tags</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#if $page.data.tickets}
-					{#each order_by_id($page.data.tickets) as d}
-						<tr>
-							<td>{d.id}</td>
-							<td>{d.created_at.slice(0, 10)}</td>
-							<td>{d.report}</td>
-							<td>{d.tags}</td>
-						</tr>
-					{/each}
-				{:else}
-					<p>No tickets</p>
-				{/if}
-			</tbody>
-		</table>
-	</div>
+  <h1 class="h1 my-8">{title}</h1>
+  <button
+    class="btn variant-filled mb-4"
+    on:click={() => ($current_tag_filter = null)}>reset filter</button
+  >
+  <div class="table-container">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Created</th>
+          <th>Report</th>
+          <th>Tags</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#if view_tickets}
+          {#each order_by_id(view_tickets) as d}
+            <tr>
+              <td>{d.id}</td>
+              <td>{d.created_at.slice(0, 10)}</td>
+              <td>{d.report}</td>
+              <td>
+                {#if d.formattted_tags}
+                  <TagViewer {d} />
+                {/if}
+              </td>
+            </tr>
+          {/each}
+        {:else}
+          <p>No tickets</p>
+        {/if}
+      </tbody>
+    </table>
+  </div>
 </div>

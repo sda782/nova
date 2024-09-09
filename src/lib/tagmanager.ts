@@ -7,12 +7,24 @@ export enum Tags {
     COMPASS,
     HOURGLASS
 }
+export function get_tags() {
+    return Object
+        .keys(Tags)
+        .filter((v) => isNaN(Number(v)))
+}
+export function get_tags_index(): number[] {
+    return Object
+        .keys(Tags)
+        .map(Number)
+        .filter((v) => !isNaN(v));
+}
 
 export function parseTags(tags: string): Tags[] {
     if (tags === null) return []
     if (tags === undefined) return []
     if (tags === "") return []
-
+    let tagsList = tags.split(",")
+    tagsList = uniq(tagsList)
     return tags.split(",").map((tag) => {
         if (tag === "BUG") return Tags.BUG
         if (tag === "IDEA") return Tags.IDEA
@@ -36,4 +48,11 @@ export function stringifyTags(tags: Tags[]): string {
         if (tag === Tags.HOURGLASS) return "HOURGLASS"
         return "OTHER"
     }).join(",")
+}
+
+function uniq(a: string[]) {
+    var seen: any = {};
+    return a.filter(function (item: string) {
+        return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+    });
 }

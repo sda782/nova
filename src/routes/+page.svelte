@@ -3,6 +3,7 @@
   import { current_tag_filter } from "$lib/store";
   import { Tags } from "$lib/tagmanager";
   import type { ticket_data } from "../lib/supabaseapi";
+  import AddTag from "./AddTag.svelte";
   import TagViewer from "./TagViewer.svelte";
   const title = "Nova ✨";
   export let data;
@@ -12,9 +13,7 @@
   }
   function update(tickets: Array<ticket_data>, tag_filter: Tags | null) {
     view_tickets = [...order_by_id(tickets)];
-    console.log("view_tickets", view_tickets);
     if (tag_filter !== null) {
-      console.log("current_tag_filter", tag_filter);
       const t: Tags = tag_filter;
       view_tickets = [
         ...view_tickets.filter((d: ticket_data) =>
@@ -23,6 +22,7 @@
       ];
     }
   }
+
   $: update($page.data.tickets, $current_tag_filter);
 </script>
 
@@ -50,12 +50,17 @@
           {#each order_by_id(view_tickets) as d}
             <tr>
               <td>{d.id}</td>
-              <td>{d.created_at.slice(0, 10)}</td>
+              <td
+                ><span class="badge variant-filled"
+                  >{d.created_at.slice(0, 10)}</span
+                ></td
+              >
               <td>{d.report}</td>
               <td>
                 {#if d.formattted_tags}
-                  <TagViewer {d} />
+                  <TagViewer bind:d />
                 {/if}
+                <AddTag bind:d />
               </td>
             </tr>
           {/each}

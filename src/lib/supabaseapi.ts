@@ -13,33 +13,27 @@ export async function get_tickets(): Promise<any> {
         return {}
     }
     var data = await res.json().then((d) => {
-        let r = d.map((ticket: ticket_data_raw) => {
-            let t: ticket_data = {
+        return d.map((ticket: ticket_data_raw) => {
+            return {
                 id: ticket.id,
                 created_at: ticket.created_at,
                 report: ticket.report,
                 formattted_tags: parseTags(ticket?.tags)
             }
-            return t
         });
-        console.log(r)
-        return r
     })
-
-
     return data
 
 }
 
-export async function update_ticket(id: number, tags_array: Array<Tags>): Promise<any> {
-    const t = stringifyTags(tags_array)
-    const res = await fetch(api_url + "/bugs?id=eq." + id, {
+export async function update_ticket_tags(ticket: ticket_data): Promise<any> {
+    const res = await fetch(api_url + "/bugs?id=eq." + ticket.id, {
         method: "PATCH",
         headers: {
             "apikey": anon_key
         },
         body: JSON.stringify({
-            tags: t
+            tags: stringifyTags(ticket.formattted_tags)
         })
     })
     if (res.status !== 200) {

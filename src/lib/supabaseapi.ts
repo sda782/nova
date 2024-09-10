@@ -29,11 +29,13 @@ export async function get_tickets(): Promise<any> {
 export async function update_ticket_tags(ticket: ticket_data): Promise<any> {
     const res = await fetch(api_url + "/bugs?id=eq." + ticket.id, {
         method: "PATCH",
+
         headers: {
-            "apikey": anon_key
+            "apikey": anon_key,
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
-            tags: stringifyTags(ticket.formattted_tags)
+            "tags": stringifyTags(ticket.formattted_tags)
         })
     })
     if (res.status !== 200) {

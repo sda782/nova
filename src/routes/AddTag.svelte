@@ -18,6 +18,7 @@
       update_ticket_tags(d);
     }
     select.value = "";
+    select.blur();
   }
   function get_valid_tags(): Array<Tags> {
     return get_tags_index().filter((v) => !d.formattted_tags.includes(v));

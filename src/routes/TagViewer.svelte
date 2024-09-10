@@ -5,6 +5,7 @@
   export let d: ticket_data;
   function set_filter(t: Tags) {
     $current_tag_filter = t;
+    console.log(t);
   }
 </script>
 

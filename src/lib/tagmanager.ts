@@ -1,3 +1,5 @@
+import type { ticket_data } from "./supabaseapi";
+
 export enum Tags {
     BUG,
     IDEA,
@@ -17,6 +19,11 @@ export function get_tags_index(): number[] {
         .keys(Tags)
         .map(Number)
         .filter((v) => !isNaN(v));
+}
+
+export function get_tag_index(tag: string): number {
+
+    return get_tags().indexOf(tag);
 }
 
 export function parseTags(tags: string): Tags[] {
@@ -55,4 +62,25 @@ function uniq(a: string[]) {
     return a.filter(function (item: string) {
         return seen.hasOwnProperty(item) ? false : (seen[item] = true);
     });
+}
+
+export function countTags(tickets: Array<ticket_data>) {
+    const tagCount: any = {};
+
+    Object.keys(Tags).forEach((key: string) => {
+        if (!isNaN(Number(key))) {
+            tagCount[Tags[(key as any)]] = 0;
+        }
+    });
+
+    tickets.forEach((ticket: ticket_data) => {
+        ticket.formattted_tags.forEach((tag: Tags) => {
+            tagCount[Tags[(tag as any)]]++;
+        });
+    });
+    return Object.entries(tagCount).map(([tag, count]) => ({
+        tag,
+        count
+    }));
+
 }

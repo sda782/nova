@@ -4,6 +4,7 @@
   import { Tags } from "$lib/tagmanager";
   import type { ticket_data } from "../lib/supabaseapi";
   import AddTag from "./AddTag.svelte";
+  import TagStats from "./TagStats.svelte";
   import TagViewer from "./TagViewer.svelte";
   const title = "Nova ✨";
   export let data;
@@ -29,12 +30,14 @@
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
-<div class="container mx-auto">
+<div class="container mx-auto pb-20">
   <h1 class="h1 my-8">{title}</h1>
   <button
-    class="btn variant-filled mb-4"
-    on:click={() => ($current_tag_filter = null)}>reset filter</button
+    class="btn btn-sm variant-filled mb-4"
+    on:click={() => ($current_tag_filter = null)}>Reset filter</button
   >
+  <TagStats {view_tickets} />
+
   <div class="table-container">
     <table class="table table-hover">
       <thead>
